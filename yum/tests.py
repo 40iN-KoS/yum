@@ -33,6 +33,10 @@ class InterfaceCheck(unittest.TestCase):
         obj = YummyDict(simple_dict)
         self.assertEqual(obj._raw_data, simple_dict)
 
+    def test_attribute(self):
+        obj = YummyDict(simple_dict)
+        self.assertEqual(obj.raw, simple_dict['raw'])
+
 
 class ReadWriteCheck(unittest.TestCase):
     pass
