@@ -3,9 +3,13 @@
 import unittest
 
 from yum import YummyDict
+from errors import YumValidationError
+
 
 empty_dict = {}
 simple_dict = {'raw': 'test'}
+digit_key_dict = {1: 2, 'any': 'text'}
+leading_underscore_key_dict = {'_leading': 'underscore', 'any': 'text'}
 
 
 class SimpleCheck(unittest.TestCase):
@@ -15,7 +19,13 @@ class SimpleCheck(unittest.TestCase):
 
 
 class ValidationCheck(unittest.TestCase):
-    pass
+    def test_invalid_input_with_digit_key(self):
+        with self.assertRaises(YumValidationError):
+            YummyDict(digit_key_dict)
+
+    def test_invalid_input_with_leading_underscore_key(self):
+        with self.assertRaises(YumValidationError):
+            YummyDict(leading_underscore_key_dict)
 
 
 class InterfaceCheck(unittest.TestCase):
