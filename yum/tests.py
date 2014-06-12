@@ -4,10 +4,14 @@ import unittest
 
 from yum import YummyDict
 
+empty_dict = {}
+simple_dict = {'raw': 'test'}
+
 
 class SimpleCheck(unittest.TestCase):
     def test_init(self):
-        obj = YummyDict({})
+        obj = YummyDict(empty_dict)
+        self.assertIsInstance(obj, YummyDict)
 
 
 class ValidationCheck(unittest.TestCase):
@@ -15,7 +19,9 @@ class ValidationCheck(unittest.TestCase):
 
 
 class InterfaceCheck(unittest.TestCase):
-    pass
+    def test_raw(self):
+        obj = YummyDict(simple_dict)
+        self.assertEqual(obj._raw_data, simple_dict)
 
 
 class ReadWriteCheck(unittest.TestCase):
