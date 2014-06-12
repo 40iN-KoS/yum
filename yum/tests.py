@@ -2,11 +2,12 @@
 
 import unittest
 
-# from yum import YummyDict
+from yum import YummyDict
 
 
 class SimpleCheck(unittest.TestCase):
-    pass
+    def test_init(self):
+        obj = YummyDict({})
 
 
 class ValidationCheck(unittest.TestCase):
