@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 import unittest
 
 from yum import YummyDict
@@ -8,6 +9,11 @@ from errors import YumValidationError
 
 empty_dict = {}
 simple_dict = {'raw': 'test'}
+complex_dict = {
+    'string': 'text',
+    'dict': {1:2, 'a':'value'},
+    'list': [1, None, 'text'],
+    }
 digit_key_dict = {1: 2, 'any': 'text'}
 leading_underscore_key_dict = {'_leading': 'underscore', 'any': 'text'}
 
@@ -39,7 +45,18 @@ class InterfaceCheck(unittest.TestCase):
 
 
 class ReadWriteCheck(unittest.TestCase):
-    pass
+    def test_attribute_assignment(self):
+        obj = YummyDict(simple_dict)
+        with self.assertRaises(AttributeError):
+            obj.a = 'test'
+
+    def test_mutable_objects(self):
+        d = copy.deepcopy(complex_dict)
+        obj = YummyDict(d)
+        obj.list.append('value')
+        obj.dict.update({'item': 'value'})
+        self.assertEqual(obj.list, complex_dict['list'])
+        self.assertEqual(obj.dict, complex_dict['dict'])
 
 
 if __name__ == "__main__":
