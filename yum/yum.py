@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import copy
 
-import jsonschema
-
+from jsonschema import Draft4Validator
 from jsonschema.exceptions import ValidationError
 
 
 class YummyDict(object):
-    _schema = {}
+    _schema = {}  # TODO: schema validation
     __schema = {
         '$schema': 'http://json-schema.org/schema#',
         'type': 'object',
@@ -15,16 +14,16 @@ class YummyDict(object):
         'additionalProperties': False,
         }
     _processing_mapping = {}
-    __base_validator = jsonschema.Draft4Validator(__schema)
-    _validator = jsonschema.Draft4Validator(_schema)
-    # _defaults_map = {}
+    __base_validator = Draft4Validator(__schema)
 
     def __init__(self, obj):
         self._validate(obj)
-        self._object = self._processing(obj)
+        self._object = self._process(obj)
         self._raw_object = obj
 
     def __getattr__(self, name):
+        if name.startswith('_'):
+            raise AttributeError
         return copy.deepcopy(self._object[name])
 
     def __setattr__(self, name, value):
@@ -51,19 +50,12 @@ class YummyDict(object):
             cls.__base_validator.validate(obj)
         except TypeError as e:
             raise ValidationError(e)
-        cls._validator.validate(obj)
+        validator = Draft4Validator(cls._schema)
+        validator.validate(obj)
 
     @classmethod
-    def _processing(cls, obj):
+    def _process(cls, obj):
         result = {}
         for k, v in obj.iteritems():
             result.update({k: cls._processing_mapping.get(k, lambda v: v)(v)})
         return result
-
-
-if __name__ == '__main__':
-    d = YummyDict({'a': 2})
-    # d = YummyDict({1: 2, 'any': 'text'})
-    print d.a
-    print d
-    print len(d)
