@@ -58,7 +58,10 @@ class YummyDict(object):
         except (TypeError, ValidationError):
             raise YumValidationError
         validator = Draft4Validator(cls._schema)
-        validator.validate(obj)
+        try:
+            validator.validate(obj)
+        except ValidationError:
+            raise YumValidationError
 
     @classmethod
     def _process(cls, obj):
