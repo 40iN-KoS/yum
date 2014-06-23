@@ -4,6 +4,8 @@ import copy
 from jsonschema import Draft4Validator
 from jsonschema.exceptions import ValidationError
 
+from errors import ValidationError as YumValidationError
+
 
 class YummyDict(object):
     _schema = {}  # TODO: schema validation
@@ -48,8 +50,8 @@ class YummyDict(object):
     def _validate(cls, obj):
         try:
             cls.__base_validator.validate(obj)
-        except TypeError as e:
-            raise ValidationError(e)
+        except (TypeError, ValidationError):
+            raise YumValidationError
         validator = Draft4Validator(cls._schema)
         validator.validate(obj)
 

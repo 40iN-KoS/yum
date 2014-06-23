@@ -4,7 +4,7 @@ import copy
 import unittest
 
 from yum import YummyDict
-from jsonschema.exceptions import ValidationError
+from errors import ValidationError
 
 
 empty_dict = {}
