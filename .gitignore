@@ -1,0 +1,3 @@
+yum.egg-info/
+*.pyc
+draft.py
