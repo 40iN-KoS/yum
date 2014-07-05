@@ -1,16 +1,24 @@
 # -*- coding: utf-8 -*-
+
+
 import copy
 
 from jsonschema import Draft4Validator
-from jsonschema.exceptions import ValidationError
-
-from errors import ValidationError as YumValidationError
+from jsonschema.exceptions import ValidationError as SchemaValidationError
 
 
-class YummyDict(object):
-    _schema = {}  # TODO: schema validation
-    _new_keys = {}
-    _processing_mapping = {}
+class YumError(Exception):
+    pass
+
+
+class ValidationError(YumError):
+    pass
+
+
+class Dict(object):
+    _schema = {}
+    _process = {}
+    _rename = {}
 
     __schema = {
         '$schema': 'http://json-schema.org/schema#',
@@ -22,7 +30,7 @@ class YummyDict(object):
 
     def __init__(self, obj):
         self._validate(obj)
-        self._object = self._renaming(self._process(obj))
+        self._object = self._renaming(self._processing(obj))
         self._raw_object = obj
 
     def __getattr__(self, name):
@@ -40,39 +48,52 @@ class YummyDict(object):
             self.__dict__.update({name: value})
 
     def __len__(self):
-        return len(self._object)
+        return self._object.__len__()
 
     def __str__(self):
-        return str(self._object)
+        return self._object.__str__()
 
     def __repr__(self):
-        return repr(self._object)
+        return self._object.__repr__()
 
     def __iter__(self):
-        raise NotImplementedError
+        return self._object.__iter__()
 
     @classmethod
     def _validate(cls, obj):
         try:
             cls.__base_validator.validate(obj)
-        except (TypeError, ValidationError):
-            raise YumValidationError
+        except (TypeError, SchemaValidationError):
+            raise ValidationError
         validator = Draft4Validator(cls._schema)
         try:
             validator.validate(obj)
-        except ValidationError:
-            raise YumValidationError
+        except SchemaValidationError:
+            raise ValidationError
 
     @classmethod
-    def _process(cls, obj):
+    def _processing(cls, obj):
         result = {}
         for k, v in obj.iteritems():
-            result.update({k: cls._processing_mapping.get(k, lambda v: v)(v)})
+            result.update({k: cls._process.get(k, lambda v: v)(v)})
         return result
 
     @classmethod
     def _renaming(cls, obj):
         result = {}
         for k, v in obj.iteritems():
-            result.update({cls._new_keys.get(k, k): v})
+            result.update({cls._rename.get(k, k): v})
         return result
+
+
+
+# d = {'bType': '2', 'bSubType': 1}
+# class ddd(Dict):
+#     _process = {'bType': int, 'bSubType': bool}
+#     _rename = {'bType': 'type', 'bSubType': 'subtype'}
+
+# q = ddd(d)
+# print q.type
+# print q.subtype
+# print 'type' in q
+# print q

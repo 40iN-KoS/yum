@@ -3,8 +3,7 @@
 import copy
 import unittest
 
-from yum import YummyDict
-from errors import ValidationError
+from main import Dict, ValidationError
 
 
 empty_dict = {}
@@ -20,39 +19,39 @@ leading_underscore_key_dict = {'_leading': 'underscore', 'any': 'text'}
 
 class SimpleCheck(unittest.TestCase):
     def test_init(self):
-        obj = YummyDict(empty_dict)
-        self.assertIsInstance(obj, YummyDict)
+        obj = Dict(empty_dict)
+        self.assertIsInstance(obj, Dict)
 
 
 class ValidationCheck(unittest.TestCase):
     def test_invalid_input_with_digit_key(self):
         with self.assertRaises(ValidationError):
-            YummyDict(digit_key_dict)
+            Dict(digit_key_dict)
 
     def test_invalid_input_with_leading_underscore_key(self):
         with self.assertRaises(ValidationError):
-            YummyDict(leading_underscore_key_dict)
+            Dict(leading_underscore_key_dict)
 
 
 class InterfaceCheck(unittest.TestCase):
     def test_raw(self):
-        obj = YummyDict(simple_dict)
+        obj = Dict(simple_dict)
         self.assertEqual(obj._raw_object, simple_dict)
 
     def test_attribute(self):
-        obj = YummyDict(simple_dict)
+        obj = Dict(simple_dict)
         self.assertEqual(obj.raw, simple_dict['raw'])
 
 
 class ReadWriteCheck(unittest.TestCase):
     def test_attribute_assignment(self):
-        obj = YummyDict(simple_dict)
+        obj = Dict(simple_dict)
         with self.assertRaises(AttributeError):
             obj.a = 'test'
 
     def test_mutable_objects(self):
         d = copy.deepcopy(complex_dict)
-        obj = YummyDict(d)
+        obj = Dict(d)
         obj.list.append('value')
         obj.dict.update({'item': 'value'})
         self.assertEqual(obj.list, complex_dict['list'])
