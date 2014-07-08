@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from main import Processor
+from yum import Processor
 
 
 bad_api_response = {
@@ -31,9 +31,9 @@ class User(Processor):
 
 
 user = User(bad_api_response)
+if user.is_active:
+    print user.firstname, user.lastname
+
 print user
-print user._object
-print dir(user)
-print user.firstname
+print type(user)
 print type(user.id)
-print hasattr(user, 'lastname')
