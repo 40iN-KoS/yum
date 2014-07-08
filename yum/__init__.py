@@ -17,14 +17,6 @@ class Processor(object):
     process = {}
     rename = {}
 
-    __schema = {
-        '$schema': 'http://json-schema.org/schema#',
-        'type': 'object',
-        'patternProperties': {'^[^_]': {}},
-        'additionalProperties': False,
-        }
-    __base_validator = Draft4Validator(__schema)
-
     def __new__(self, obj):
         filtered_obj = self.filter(obj)
         return Dict(filtered_obj)
@@ -36,10 +28,6 @@ class Processor(object):
 
     @classmethod
     def validate(cls, obj):
-        try:
-            cls.__base_validator.validate(obj)
-        except (TypeError, SchemaValidationError):
-            raise ValidationError
         validator = Draft4Validator(cls.schema)
         try:
             validator.validate(obj)
@@ -62,7 +50,18 @@ class Processor(object):
 
 
 class Dict(object):
+    __base_validator = Draft4Validator({
+        '$schema': 'http://json-schema.org/schema#',
+        'type': 'object',
+        'patternProperties': {'^[^_]': {}},
+        'additionalProperties': False,
+        }
+    )
     def __init__(self, obj):
+        try:
+            self.__base_validator.validate(obj)
+        except (TypeError, SchemaValidationError):
+            raise ValidationError
         self._object = obj
 
     def __getattr__(self, name):
