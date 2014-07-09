@@ -3,7 +3,7 @@
 import copy
 import unittest
 
-from main import Dict, ValidationError
+from yum import Processor, ValidationError, Dict
 
 
 empty_dict = {}
@@ -19,43 +19,43 @@ leading_underscore_key_dict = {'_leading': 'underscore', 'any': 'text'}
 
 class SimpleCheck(unittest.TestCase):
     def test_init(self):
-        obj = Dict(empty_dict)
+        obj = Processor(empty_dict)
         self.assertIsInstance(obj, Dict)
 
 
 class ValidationCheck(unittest.TestCase):
     def test_invalid_input_with_digit_key(self):
         with self.assertRaises(ValidationError):
-            Dict(digit_key_dict)
+            Processor(digit_key_dict)
 
     def test_invalid_input_with_leading_underscore_key(self):
         with self.assertRaises(ValidationError):
-            Dict(leading_underscore_key_dict)
+            Processor(leading_underscore_key_dict)
 
 
 class InterfaceCheck(unittest.TestCase):
-    def test_raw(self):
-        obj = Dict(simple_dict)
-        self.assertEqual(obj._raw_object, simple_dict)
+    # def test_raw(self):
+    #     obj = Processor(simple_dict)
+    #     self.assertEqual(obj._raw_object, simple_dict)
 
     def test_attribute(self):
-        obj = Dict(simple_dict)
+        obj = Processor(simple_dict)
         self.assertEqual(obj.raw, simple_dict['raw'])
 
 
 class ReadWriteCheck(unittest.TestCase):
-    def test_attribute_assignment(self):
-        obj = Dict(simple_dict)
-        with self.assertRaises(AttributeError):
-            obj.a = 'test'
+    # def test_attribute_assignment(self):
+    #     obj = Processor(simple_dict)
+    #     with self.assertRaises(AttributeError):
+    #         obj.a = 'test'
 
     def test_mutable_objects(self):
         d = copy.deepcopy(complex_dict)
-        obj = Dict(d)
+        obj = Processor(d)
         obj.list.append('value')
         obj.dict.update({'item': 'value'})
-        self.assertEqual(obj.list, complex_dict['list'])
-        self.assertEqual(obj.dict, complex_dict['dict'])
+        self.assertNotEqual(obj.list, complex_dict['list'])
+        self.assertNotEqual(obj.dict, complex_dict['dict'])
 
 
 if __name__ == "__main__":

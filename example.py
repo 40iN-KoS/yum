@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from main import Dict
+from yum import Processor
 
 
 bad_api_response = {
@@ -11,17 +11,17 @@ bad_api_response = {
 }
 
 
-class User(Dict):
-    _schema = {
+class User(Processor):
+    schema = {
         '$schema': 'http://json-schema.org/schema#',
         'type': 'object',
         'required': ['UserId', 'UserIsActive', 'UserFirstname', 'UserLastname'],
     }
-    _process = {
+    process = {
         'UserId': int,
         'UserIsActive': bool,
     }
-    _rename = {
+    rename = {
         'UserId': 'id',
         'UserIsActive': 'is_active',
         'UserFirstname': 'firstname',
@@ -29,7 +29,11 @@ class User(Dict):
     }
 
 
+
 user = User(bad_api_response)
+if user.is_active:
+    print user.firstname, user.lastname
+
 print user
-print user.firstname
+print type(user)
 print type(user.id)
