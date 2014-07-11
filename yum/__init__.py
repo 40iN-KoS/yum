@@ -3,6 +3,8 @@
 from jsonschema import Draft4Validator
 from jsonschema.exceptions import ValidationError as SchemaValidationError
 
+__version__ = '0.1'
+
 
 class YumError(Exception):
     pass
